@@ -88,8 +88,12 @@ class QRels:
         for line in fQRels:
             line = line.strip()
             if line == '': continue
-            split = line.split('\t')
-            topicId, docId, relevanceScore = split[0], split[2], float(split[3])
+            split = line.split()
+            try:
+              relevanceScore = float(split[3].strip('"'))
+            except:
+              float(split[3].replace('\U00002013', '-'))
+            topicId, docId, relevanceScore = split[0], split[2], relevanceScore
 
             if topicId not in self.allJudgements:
                 self.allJudgements[topicId] = {}
