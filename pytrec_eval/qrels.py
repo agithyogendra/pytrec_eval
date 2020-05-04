@@ -82,6 +82,13 @@ class QRels:
             for docId, relevanceScore in dictDocs.items():
                 streamOut.write('{}\t0\t{}\t{}\n'.format(topicId, docId, relevanceScore))
 
+    def __get_relevance_score(self, relevanceScore):
+        """Returns the float value of the relevance score from the qrels file"""
+        try:
+            return float(relevanceScore.strip('"'))
+        except:
+            return float(relevanceScore.replace('\U00002013', '-'))
+        
     def _parseFile(self, otherQRelsPath):
         """Initialises the structure by reading and existing trelsFile"""
         fQRels = open(otherQRelsPath, 'r', encoding='utf-8')
@@ -89,12 +96,7 @@ class QRels:
             line = line.strip()
             if line == '': continue
             split = line.split()
-            try:
-              relevanceScore = float(split[3].strip('"'))
-            except:
-              float(split[3].replace('\U00002013', '-'))
-            topicId, docId, relevanceScore = split[0], split[2], relevanceScore
-
+            topicId, docId, relevanceScore = split[0], split[2], self.__get_relevance_score(split[3])
             if topicId not in self.allJudgements:
                 self.allJudgements[topicId] = {}
             self.allJudgements[topicId][docId] = relevanceScore
